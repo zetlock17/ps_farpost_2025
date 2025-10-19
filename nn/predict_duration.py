@@ -13,10 +13,6 @@ import os
 import sqlite3
 import joblib
 
-# ============================================================================
-# 1. ЗАГРУЗКА ДАННЫХ (аналогично clustering.py)
-# ============================================================================
-
 def load_data_from_db(db_path='d:/code/vlru/nn/dataset.db'):
     """Загрузка данных об отключениях из базы данных SQLite"""
     
@@ -75,10 +71,6 @@ def load_weather_data(db_path='d:/code/vlru/nn/weather.db'):
         return None
     finally:
         conn.close()
-
-# ============================================================================
-# 2. ПРЕПРОЦЕССИНГ ДАННЫХ (адаптирован для регрессии)
-# ============================================================================
 
 class OutagePreprocessor:
     """Класс для обработки данных об отключениях для задачи регрессии."""
@@ -198,10 +190,6 @@ class OutagePreprocessor:
         print(f"Препроцессор загружен из {filepath}")
         return preprocessor
 
-# ============================================================================
-# 3. ДАТАСЕТ И МОДЕЛЬ
-# ============================================================================
-
 class OutageDurationDataset(Dataset):
     """Датасет для предсказания длительности отключений."""
     def __init__(self, features, labels):
@@ -231,7 +219,6 @@ class DurationPredictor(nn.Module):
             prev_dim = hidden_dim
         
         layers.append(nn.Linear(prev_dim, 1))
-        # Используем ReLU, чтобы предсказания были неотрицательными
         layers.append(nn.ReLU())
 
         self.network = nn.Sequential(*layers)
@@ -239,13 +226,9 @@ class DurationPredictor(nn.Module):
     def forward(self, x):
         return self.network(x)
 
-# ============================================================================
-# 4. ОБУЧЕНИЕ И ОЦЕНКА
-# ============================================================================
-
 def train_model(model, train_loader, val_loader, epochs, lr, device):
     """Функция для обучения модели."""
-    criterion = nn.MSELoss() # Среднеквадратичная ошибка для регрессии
+    criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.5)
     
@@ -305,10 +288,6 @@ def evaluate_model(model, data_loader, device):
     print(f"R^2 Score: {r2:.4f}")
     
     return all_labels, all_preds
-
-# ============================================================================
-# 5. ОСНОВНАЯ ФУНКЦИЯ
-# ============================================================================
 
 def main():
     """Основная функция для запуска."""
