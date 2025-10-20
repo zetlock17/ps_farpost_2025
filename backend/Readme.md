@@ -5,8 +5,10 @@
 python -m venv venv
 
 2.**Активация окружения:**
+
 2.1*macOS/Linux:*
 source venv/bin/activate
+
 2.2*Windows:*
 .\venv\Scripts\activate
 
