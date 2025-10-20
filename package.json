@@ -1,0 +1,13 @@
+{
+  "name": "ps-farpost-2025-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/frontend",
+    "build": "npm run build --workspace=packages/ui-kit && npm run build --workspace=apps/frontend",
+    "preview": "npm run preview --workspace=apps/frontend"
+  }
+}
