@@ -1,6 +1,3 @@
-#Backend#
-
-
 1.**Создание окружения:**
 python -m venv venv
 
