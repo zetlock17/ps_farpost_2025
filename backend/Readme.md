@@ -1,19 +1,19 @@
 #Backend 
 
 
-**Создание окружения:**
+1.**Создание окружения:**
 python -m venv venv
 
-**Активация окружения:**
-*macOS/Linux:*
+2.**Активация окружения:**
+2.1*macOS/Linux:*
 source venv/bin/activate
-*Windows:*
+2.2*Windows:*
 .\venv\Scripts\activate
 
-**Установка зависимостей**
+3.**Установка зависимостей**
 Из папки backend введите команду:
 ```pip install -r requirements.txt```
 
-**Запуск приложения**
+4.**Запуск приложения**
 Из папки backend/core введите команду:
 ```uvicorn app:app --host 0.0.0.0 --port 8001 --reload```
