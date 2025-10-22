@@ -7,7 +7,7 @@ export interface ButtonProps {
 
 export const ButtonTest: React.FC<ButtonProps> = ({ children, onClick }) => {
   return (
-    <button onClick={onClick} style={{ padding: '10px 20px', borderRadius: '5px', border: 'none', background: 'red', color: 'white' }}>
+    <button onClick={onClick} className="px-4 py-2 bg-blue-500 text-white rounded">
       {children}
     </button>
   );
