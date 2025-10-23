@@ -3,14 +3,14 @@ from utils.common_util import base as Base
 
 
 class BigFolkDistrictOrm(Base):
-    __tablename__ = "big_folk_district"
+    __tablename__ = "big_folk_districts"
 
     id = Column(Text, primary_key=True)
     name = Column(Text)
 
 
 class BlackoutOrm(Base):
-    __tablename__ = "blackout"
+    __tablename__ = "blackouts"
 
     id = Column(Text, primary_key=True)
     start_date = Column(Text)
@@ -21,15 +21,38 @@ class BlackoutOrm(Base):
     source = Column(Text)
 
 
-class BlackoutBuildingOrm(Base):
-    __tablename__ = "blackouts_building"
+class CityOrm(Base):
+    __tablename__ = "cities"
 
-    blackout_id = Column(Text, ForeignKey("blackouts.id"), primary_key=True)
-    building_id = Column(Text, ForeignKey("buildings.id"), primary_key=True)
+    id = Column(Text, primary_key=True)
+    name = Column(Text)
+
+
+class DistrictOrm(Base):
+    __tablename__ = "districts"
+
+    id = Column(Text, primary_key=True)
+    name = Column(Text)
+
+
+class FolkDistrictOrm(Base):
+    __tablename__ = "folk_districts"
+
+    id = Column(Text, primary_key=True)
+    name = Column(Text)
+
+
+class StreetOrm(Base):
+    __tablename__ = "streets"
+
+    id = Column(Text, primary_key=True)
+    name = Column(Text)
+
+    city_id = Column(Text, ForeignKey(CityOrm.id))
 
 
 class BuildingOrm(Base):
-    __tablename__ = "building"
+    __tablename__ = "buildings"
 
     id = Column(Text, primary_key=True)
     number = Column(Text)
@@ -37,38 +60,15 @@ class BuildingOrm(Base):
     type = Column(Text)
     coordinates = Column(Text)
 
-    street_id = Column(Text, ForeignKey("streets.id"))
-    district_id = Column(Text, ForeignKey("districts.id"))
-    folk_district_id = Column(Text, ForeignKey("folk_districts.id"))
-    big_folk_district_id = Column(Text, ForeignKey("big_folk_districts.id"))
-    city_id = Column(Text, ForeignKey("cities.id"))
+    street_id = Column(Text, ForeignKey(StreetOrm.id))
+    district_id = Column(Text, ForeignKey(DistrictOrm.id))
+    folk_district_id = Column(Text, ForeignKey(FolkDistrictOrm.id))
+    big_folk_district_id = Column(Text, ForeignKey(BigFolkDistrictOrm.id))
+    city_id = Column(Text, ForeignKey(CityOrm.id))
 
 
-class CityOrm(Base):
-    __tablename__ = "city"
+class BlackoutBuildingOrm(Base):
+    __tablename__ = "blackouts_buildings"
 
-    id = Column(Text, primary_key=True)
-    name = Column(Text)
-
-
-class DistrictOrm(Base):
-    __tablename__ = "district"
-
-    id = Column(Text, primary_key=True)
-    name = Column(Text)
-
-
-class FolkDistrictOrm(Base):
-    __tablename__ = "folk_district"
-
-    id = Column(Text, primary_key=True)
-    name = Column(Text)
-
-
-class StreetOrm(Base):
-    __tablename__ = "street"
-
-    id = Column(Text, primary_key=True)
-    name = Column(Text)
-
-    city_id = Column(Text, ForeignKey("cities.id"))
+    blackout_id = Column(Text, ForeignKey(BlackoutOrm.id), primary_key=True)
+    building_id = Column(Text, ForeignKey(BuildingOrm.id), primary_key=True)
