@@ -1,25 +1,7 @@
-import { useEffect } from "react"
-import BlackoutsStats from "./BlackoutsStats"
-import Footer from "./Footer"
-import Header from "./Header"
-import MapComponent from "./MapComponent"
-import { useBlackoutsStore } from "../store/blackoutsStore"
+import TaxiAggregatorLayout from "./TaxiAggregatorLayout"
 
 const MainPage = () => {
-  const fetchBlackouts = useBlackoutsStore((state) => state.fetchBlackouts);
-
-  useEffect(() => {
-    fetchBlackouts();
-  }, [fetchBlackouts]);
-
-  return (
-    <>
-      <Header />
-      <MapComponent />
-      <BlackoutsStats />
-      <Footer />
-    </>
-  )
+  return <TaxiAggregatorLayout />
 }
 
 export default MainPage

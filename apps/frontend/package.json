@@ -10,7 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.24.0",
     "@tailwindcss/vite": "^4.1.15",
+    "antd": "^5.27.6",
+    "dayjs": "^1.11.18",
+    "lucide-react": "^0.548.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",
