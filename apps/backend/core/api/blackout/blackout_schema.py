@@ -28,11 +28,11 @@ class BlackoutInfoSchema(BaseModel):
         ...
     )
 
-    building_number: int = Field(...)
+    building_number: str = Field(...)
     street: str = Field(...)
     district: str = Field(...)
     folk_district: str = Field(...)
     big_folk_district: str = Field(...)
     city: str = Field(...)
 
-    coordinate: Coordinate = Field(...)
+    coordinates: Coordinate = Field(...)

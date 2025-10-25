@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, Text
-from utils.common_util import base as Base
+from utils.db_util import base as Base
 
 
 class BigFolkDistrictOrm(Base):
