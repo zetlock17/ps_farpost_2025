@@ -1,5 +1,5 @@
 import { useBlackoutsStore } from "../store/blackoutsStore";
-import type { BlackoutsQueryParams } from "../api/mockBlackoutsApi";
+import type { BlackoutsQueryParams } from "../types/types";
 
 const BlackoutsFilters = () => {
   const selectedType = useBlackoutsStore((state) => state.selectedType);
@@ -22,11 +22,10 @@ const BlackoutsFilters = () => {
           <button
             key={option.value}
             onClick={() => setTypeFilter(option.value)}
-            className={`px-4 py-2 rounded border cursor-pointer transition-all ${
-              selectedType === option.value
-                ? 'border-2 border-blue-600 bg-blue-600 text-white font-bold'
-                : 'border border-gray-300 bg-white text-black hover:bg-gray-50'
-            }`}
+            className={`px-4 py-2 rounded border cursor-pointer transition-all ${selectedType === option.value
+              ? 'border-2 border-blue-600 bg-blue-600 text-white font-bold'
+              : 'border border-gray-300 bg-white text-black hover:bg-gray-50'
+              }`}
           >
             {option.label}
           </button>

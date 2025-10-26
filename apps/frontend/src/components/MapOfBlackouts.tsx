@@ -2,6 +2,12 @@ import { useBlackoutsStore } from "../store/blackoutsStore";
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState, useMemo } from "react";
 
+interface MapOfBlackoutsProps {
+  variant?: "default" | "fullscreen";
+  showViewToggle?: boolean;
+  className?: string;
+}
+
 declare global {
   interface Window {
     ymaps: {
@@ -27,9 +33,20 @@ interface YandexMap {
     getBounds: () => number[][];
   };
   setBounds: (bounds: number[][], options: { checkZoomRange: boolean; zoomMargin: number }) => void;
+  events: {
+    add: (event: string, callback: (e: { get: (name: string) => unknown }) => void) => void;
+  };
+  balloon: {
+    close: () => void;
+    isOpen: () => boolean;
+  };
 }
 
-const MapOfBlackouts = () => {
+const MapOfBlackouts = ({
+  variant = "default",
+  showViewToggle = true,
+  className = "",
+}: MapOfBlackoutsProps) => {
   const filteredBlackouts = useBlackoutsStore((state) => state.filteredBlackouts);
   const isLoading = useBlackoutsStore((state) => state.isLoading);
   const mapRef = useRef<HTMLDivElement>(null);
@@ -51,7 +68,16 @@ const MapOfBlackouts = () => {
   }), []);
 
   useEffect(() => {
-    if (!mapRef.current || viewMode !== 'map') return;
+    if (!showViewToggle && viewMode !== 'map') {
+      setViewMode('map');
+    }
+  }, [showViewToggle, viewMode]);
+
+  const isFullscreen = variant === 'fullscreen';
+  const shouldRenderMap = isFullscreen || viewMode === 'map';
+
+  useEffect(() => {
+    if (!mapRef.current || !shouldRenderMap) return;
 
     const initMap = () => {
       if (!window.ymaps) {
@@ -66,6 +92,12 @@ const MapOfBlackouts = () => {
             center: [43.1155, 131.8855], // Владивосток
             zoom: 12,
             controls: ['zoomControl', 'fullscreenControl', 'geolocationControl']
+          });
+
+          mapInstanceRef.current.events.add('click', () => {
+            if (mapInstanceRef.current?.balloon.isOpen()) {
+              mapInstanceRef.current.balloon.close();
+            }
           });
         }
 
@@ -84,7 +116,6 @@ const MapOfBlackouts = () => {
                     <p><strong>${blackout.street}, ${blackout.building_number}</strong></p>
                     <p style="margin: 5px 0;">${blackout.description}</p>
                     <p style="font-size: 12px; color: #666;">
-                      📍 ${blackout.folk_district}<br/>
                       🕐 ${new Date(blackout.start_date).toLocaleDateString('ru-RU')} - 
                       ${new Date(blackout.end_date).toLocaleDateString('ru-RU')}
                     </p>
@@ -97,7 +128,8 @@ const MapOfBlackouts = () => {
               },
               {
                 preset: 'islands#circleIcon',
-                iconColor: typeColors[blackout.type]
+                iconColor: typeColors[blackout.type],
+                balloonRadius: '10'
               }
             );
 
@@ -116,33 +148,58 @@ const MapOfBlackouts = () => {
     };
 
     initMap();
-  }, [filteredBlackouts, viewMode, typeLabels, typeColors]);
+  }, [filteredBlackouts, shouldRenderMap, typeLabels, typeColors]);
+
+  if (isFullscreen) {
+    return (
+      <div className={`relative h-full w-full ${className}`}>
+        {isLoading && (
+          <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/70 text-white">
+            <span className="mb-3 inline-block h-10 w-10 animate-spin rounded-full border-4 border-white/40 border-t-white" />
+            <span className="text-sm font-medium">Загрузка карты...</span>
+          </div>
+        )}
+        <div
+          ref={mapRef}
+          className="h-full w-full"
+          style={{ width: '100%', height: '100%' }}
+        />
+        {!isLoading && filteredBlackouts.length === 0 && (
+          <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 -translate-y-1/2 text-center text-white drop-shadow">
+            Нет отключений для отображения
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (isLoading) {
     return <div className="p-5 text-center">Загрузка карты...</div>;
   }
 
   return (
-    <div className="p-5">
+    <div className={`p-5 ${className}`}>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Карта отключений</h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setViewMode('map')}
-            className={`px-4 py-2 rounded ${viewMode === 'map' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            🗺️ Карта
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`px-4 py-2 rounded ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            📋 Список
-          </button>
-        </div>
+        {showViewToggle && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setViewMode('map')}
+              className={`px-4 py-2 rounded ${viewMode === 'map' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            >
+              🗺️ Карта
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-4 py-2 rounded ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            >
+              📋 Список
+            </button>
+          </div>
+        )}
       </div>
 
-      {viewMode === 'map' ? (
+      {shouldRenderMap ? (
         <div 
           ref={mapRef} 
           style={{ 

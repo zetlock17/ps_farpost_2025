@@ -20,4 +20,7 @@ export interface Blackout {
 
 export interface BlackoutsQueryParams {
   type?: "hot_water" | "cold_water" | "electricity" | "heat";
+  district?: string;
+  query?: string;
+  startDate?: string;
 }

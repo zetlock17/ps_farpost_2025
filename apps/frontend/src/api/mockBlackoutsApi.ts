@@ -139,7 +139,7 @@ const mockBlackouts: Blackout[] = [
   }
 ];
 
-export function getMockBlackouts(params?: BlackoutsQueryParams): Blackout[] {
+function filterBlackouts(params?: BlackoutsQueryParams): Blackout[] {
   let filteredBlackouts = [...mockBlackouts];
 
   if (params?.type) {
@@ -148,5 +148,62 @@ export function getMockBlackouts(params?: BlackoutsQueryParams): Blackout[] {
     );
   }
 
+  if (params?.district) {
+    filteredBlackouts = filteredBlackouts.filter(
+      (blackout) => blackout.district.toLowerCase() === params.district?.toLowerCase()
+    );
+  }
+
+  if (params?.query) {
+    const normalized = params.query.trim().toLowerCase();
+    filteredBlackouts = filteredBlackouts.filter((blackout) => {
+      const searchableValues = [
+        blackout.description,
+        blackout.street,
+        blackout.district,
+        blackout.folk_district,
+        blackout.big_folk_district,
+        blackout.city,
+        String(blackout.building_number)
+      ];
+
+      return searchableValues.some((value) =>
+        value.toLowerCase().includes(normalized)
+      );
+    });
+  }
+
+  if (params?.startDate) {
+    const dayStart = new Date(`${params.startDate}T00:00:00`);
+    if (!Number.isNaN(dayStart.getTime())) {
+      const dayEnd = new Date(dayStart);
+      dayEnd.setDate(dayEnd.getDate() + 1);
+
+      const dayStartTimestamp = dayStart.getTime();
+      const dayEndTimestamp = dayEnd.getTime();
+
+      filteredBlackouts = filteredBlackouts.filter((blackout) => {
+        const startTimestamp = Date.parse(blackout.start_date.replace(" ", "T"));
+        return (
+          !Number.isNaN(startTimestamp) &&
+          startTimestamp >= dayStartTimestamp &&
+          startTimestamp < dayEndTimestamp
+        );
+      });
+    }
+  }
+
   return filteredBlackouts;
+}
+
+export function getMockBlackouts(params?: BlackoutsQueryParams): Blackout[] {
+  return filterBlackouts(params);
+}
+
+export function searchMockBlackouts(params?: BlackoutsQueryParams): Promise<Blackout[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(filterBlackouts(params));
+    }, 400);
+  });
 }
