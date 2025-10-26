@@ -85,6 +85,14 @@ class BlackoutRepository:
                     BigFolkDistrictOrm.name == filter.district,
                 )
             )
+        
+        if filter.street:
+            search_pattern = f"%{filter.street}%"
+            street_condition = StreetOrm.name.ilike(search_pattern)
+            stmt = stmt.where(street_condition)
+
+        if filter.building:
+            stmt = stmt.where(BuildingOrm.number == filter.building)
 
         blackouts = await self.session.execute(stmt)
 
