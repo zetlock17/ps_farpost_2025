@@ -10,7 +10,7 @@ interface BlackoutsState {
     selectedDistrict: string | "all";
     availableDistricts: string[];
     searchQuery: string;
-    selectedDate: Date | null;
+    selectedDate: dayjs.Dayjs | null;
     isLoading: boolean;
     error: string | null;
 
@@ -19,7 +19,7 @@ interface BlackoutsState {
     setTypeFilter: (type: BlackoutsQueryParams["type"] | "all") => Promise<void>;
     setDistrictFilter: (district: string | "all") => Promise<void>;
     searchBlackouts: (query: string) => Promise<void>;
-    setSelectedDate: (value: Date | null) => Promise<void>;
+    setDateFilter: (value: dayjs.Dayjs | null) => Promise<void>;
     clearFilters: () => void;
     getBlackoutById: (id: string) => Blackout | undefined;
 }
@@ -31,7 +31,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     selectedDistrict: "all",
     availableDistricts: [],
     searchQuery: "",
-    selectedDate: null,
+    selectedDate: dayjs(),
     isLoading: false,
     error: null,
 
@@ -42,14 +42,11 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
             const districts = Array.from(new Set(data.map((item) => item.district))).sort();
             set({
                 blackouts: data,
-                filteredBlackouts: data,
                 availableDistricts: districts,
-                selectedType: "all",
-                selectedDistrict: "all",
-                searchQuery: "",
-                selectedDate: null,
                 isLoading: false,
             });
+            // Apply default filters after fetching
+            get().setDateFilter(dayjs());
         } catch {
             set({
                 error: "Ошибка при загрузке данных",
@@ -75,7 +72,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         }
 
         if (selectedDate) {
-            params.startDate = dayjs(selectedDate).format("YYYY-MM-DD");
+            params.startDate = selectedDate.format("YYYY-MM-DD");
         }
 
         set({ isLoading: true, error: null });
@@ -109,7 +106,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         }
 
         if (selectedDate) {
-            params.startDate = dayjs(selectedDate).format("YYYY-MM-DD");
+            params.startDate = selectedDate.format("YYYY-MM-DD");
         }
 
         set({ isLoading: true, error: null });
@@ -143,7 +140,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         }
 
         if (selectedDate) {
-            params.startDate = dayjs(selectedDate).format("YYYY-MM-DD");
+            params.startDate = selectedDate.format("YYYY-MM-DD");
         }
 
         set({ isLoading: true, error: null });
@@ -160,7 +157,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         }
     },
 
-    setSelectedDate: async (value) => {
+    setDateFilter: async (value) => {
         const { selectedType, selectedDistrict, searchQuery } = get();
         const params: BlackoutsQueryParams = {};
 
@@ -177,7 +174,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         }
 
         if (value) {
-            params.startDate = dayjs(value).format("YYYY-MM-DD");
+            params.startDate = value.format("YYYY-MM-DD");
         }
 
         set({ isLoading: true, error: null, selectedDate: value });
@@ -194,16 +191,12 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     },
 
     clearFilters: () => {
-        const { blackouts } = get();
         set({
             selectedType: "all",
             selectedDistrict: "all",
             searchQuery: "",
-            selectedDate: null,
-            filteredBlackouts: blackouts,
-            isLoading: false,
-            error: null,
         });
+        get().setDateFilter(dayjs());
     },
 
     getBlackoutById: (id: string) => {

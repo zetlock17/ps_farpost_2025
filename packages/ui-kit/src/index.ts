@@ -1,3 +1,4 @@
-export { FilterButton } from "./components/Buttons/FilterButton";
-export { Select } from "./components/Select";
+export * from "./components/Buttons/FilterButton";
+export * from "./components/Buttons/SidebarButton";
+export * from "./components/Select";
 
