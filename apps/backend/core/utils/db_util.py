@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -7,7 +8,12 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 
-DATABASE_URL = "sqlite+aiosqlite:///databases/dataset.db"
+ROOT_DIR = Path(__file__).parent.parent.parent.parent.parent
+
+DB_PATH = ROOT_DIR / "databases" / "dataset.db"
+
+DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
+
 base = declarative_base()
 
 engine = create_async_engine(DATABASE_URL)

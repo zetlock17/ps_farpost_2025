@@ -1,11 +1,10 @@
+import logging
 from functools import wraps
 from http.client import HTTPException
 
-from fastapi import logger
+from common.common_exceptions import IntervalServerErrorHttpException
 
-from backend.core.common.common_exceptions import (
-    IntervalServerErrorHttpException,
-)
+logger = logging.getLogger("uvicorn")
 
 
 def exception_handler(func):
@@ -15,13 +14,13 @@ def exception_handler(func):
             return await func(*args, **kwargs)
         except HTTPException as e:
             logger.error(
-                f"Произошла ошибка в эндпоинте {func.__name__}: {e}",
+                f"Произошла HTTPException в эндпоинте {func.__name__}: {e}",
                 exc_info=True,
             )
             raise e
         except Exception as e:
             logger.error(
-                f"Произошла ошибка в эндпоинте {func.__name__}: {e}",
+                f"Произошла общая ошибка в эндпоинте {func.__name__}: {e}",
                 exc_info=True,
             )
             raise IntervalServerErrorHttpException(msg=str(e))

@@ -4,14 +4,14 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
-class Coordinate(BaseModel):
+class CoordinateSchema(BaseModel):
     latitude: float = Field(...)
     longitude: float = Field(...)
 
 
-class BlackoutFilter(BaseModel):
+class BlackoutFilterSchema(BaseModel):
     start_date: datetime | None = Field(None)
-    end_date: datetime | None = Field(None)
+    date: datetime | None = Field(None)
     district: str | None = Field(None)
     type: Literal["hot_water", "cold_water", "electricity", "heat"] | None = (
         Field(None)
@@ -28,11 +28,11 @@ class BlackoutInfoSchema(BaseModel):
         ...
     )
 
-    building_number: int = Field(...)
+    building_number: str = Field(...)
     street: str = Field(...)
     district: str = Field(...)
     folk_district: str = Field(...)
     big_folk_district: str = Field(...)
     city: str = Field(...)
 
-    coordinate: Coordinate = Field(...)
+    coordinates: CoordinateSchema = Field(...)
