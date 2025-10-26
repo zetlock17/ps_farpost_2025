@@ -16,7 +16,8 @@ class BlackoutFilterSchema(BaseModel):
     type: Literal["hot_water", "cold_water", "electricity", "heat"] | None = (
         Field(None)
     )
-    addres: str | None = Field(None)
+    street: str | None = Field(None)
+    building: str | None = Field(None)
 
 
 class BlackoutInfoSchema(BaseModel):
