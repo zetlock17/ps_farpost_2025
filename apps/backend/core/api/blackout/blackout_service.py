@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .blackout_repo import BlackoutRepository
-from .blackout_schema import BlackoutFilter
+from .blackout_schema import BlackoutFilterSchema
 
 
 class BlackoutService:
@@ -10,7 +10,7 @@ class BlackoutService:
         self.session = session
         self.blackout_repo = BlackoutRepository(session=self.session)
 
-    async def get_blackouts(self, filter: BlackoutFilter):
+    async def get_blackouts(self, filter: BlackoutFilterSchema):
         blackouts = await self.blackout_repo.get_blackouts(filter=filter)
         
         return blackouts

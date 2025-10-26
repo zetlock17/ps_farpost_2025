@@ -8,10 +8,10 @@ from models.models import (
     FolkDistrictOrm,
     StreetOrm,
 )
-from sqlalchemy import JSON, func, or_, select, type_coerce
+from sqlalchemy import JSON, and_, func, or_, select, type_coerce
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .blackout_schema import BlackoutFilter
+from .blackout_schema import BlackoutFilterSchema
 
 
 class BlackoutRepository:
@@ -19,7 +19,7 @@ class BlackoutRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_blackouts(self, filter: BlackoutFilter):
+    async def get_blackouts(self, filter: BlackoutFilterSchema):
         stmt = (
             select(
                 BlackoutOrm.id,
@@ -31,9 +31,13 @@ class BlackoutRepository:
                 type_coerce(
                     func.json_object(
                         "latitude",
-                        func.json_extract(BuildingOrm.coordinates, "$[0].lat"),
+                        func.coalesce(
+                            func.json_extract(BuildingOrm.coordinates, "$[0].lat"), 0.0
+                        ),
                         "longitude",
-                        func.json_extract(BuildingOrm.coordinates, "$[0].lon"),
+                        func.coalesce(
+                            func.json_extract(BuildingOrm.coordinates, "$[0].lon"), 0.0
+                        ),
                     ),
                     JSON,
                 ).label("coordinates"),
@@ -70,8 +74,8 @@ class BlackoutRepository:
         if filter.start_date:
             stmt = stmt.where(BlackoutOrm.start_date >= filter.start_date)
 
-        if filter.end_date:
-            stmt = stmt.where(BlackoutOrm.end_date <= filter.end_date)
+        if filter.date:
+            stmt = stmt.where(and_(BlackoutOrm.start_date <= filter.date, filter.date<= BlackoutOrm.end_date))
 
         if filter.district:
             stmt = stmt.where(
