@@ -1,14 +1,16 @@
 import { create } from "zustand";
-import type { Blackout, BlackoutsQueryParams } from "../types/types";
+import type { Blackout, BlackoutsQueryParams, District } from "../types/types";
 import { getMockBlackouts, searchMockBlackouts } from "../api/mockBlackoutsApi";
 import dayjs from "dayjs";
+import { getDistricts } from "../services/addressesServices";
+import { getBlackoutsByDate } from "../services/blackoutsServices";
 
 interface BlackoutsState {
     blackouts: Blackout[];
     filteredBlackouts: Blackout[];
     selectedType: BlackoutsQueryParams["type"] | "all";
-    selectedDistrict: string | "all";
-    availableDistricts: string[];
+    selectedDistricts: string[];
+    availableDistricts: District[];
     searchQuery: string;
     selectedDate: dayjs.Dayjs | null;
     isLoading: boolean;
@@ -16,8 +18,9 @@ interface BlackoutsState {
 
     // Actions
     fetchBlackouts: () => Promise<void>;
+    fetchDistricts: () => Promise<void>;
     setTypeFilter: (type: BlackoutsQueryParams["type"] | "all") => Promise<void>;
-    setDistrictFilter: (district: string | "all") => Promise<void>;
+    setDistrictFilter: (districts: string[]) => Promise<void>;
     searchBlackouts: (query: string) => Promise<void>;
     setDateFilter: (value: dayjs.Dayjs | null) => Promise<void>;
     clearFilters: () => void;
@@ -28,7 +31,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     blackouts: [],
     filteredBlackouts: [],
     selectedType: "all",
-    selectedDistrict: "all",
+    selectedDistricts: [],
     availableDistricts: [],
     searchQuery: "",
     selectedDate: dayjs(),
@@ -39,14 +42,13 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const data = getMockBlackouts();
-            const districts = Array.from(new Set(data.map((item) => item.district))).sort();
             set({
                 blackouts: data,
-                availableDistricts: districts,
                 isLoading: false,
             });
             // Apply default filters after fetching
             get().setDateFilter(dayjs());
+            get().fetchDistricts();
         } catch {
             set({
                 error: "Ошибка при загрузке данных",
@@ -55,16 +57,26 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         }
     },
 
+    fetchDistricts: async () => {
+        try {
+            const districts = await getDistricts();
+            set({ availableDistricts: districts });
+        } catch (error) {
+            console.error("Failed to fetch districts:", error);
+            set({ error: "Не удалось загрузить список районов" });
+        }
+    },
+
     setTypeFilter: async (type) => {
-        const { selectedDistrict, searchQuery, selectedDate } = get();
+        const { selectedDistricts, searchQuery, selectedDate } = get();
         const params: BlackoutsQueryParams = {};
 
         if (type !== "all") {
             params.type = type;
         }
 
-        if (selectedDistrict !== "all") {
-            params.district = selectedDistrict;
+        if (selectedDistricts.length > 0) {
+            params.districts = selectedDistricts;
         }
 
         if (searchQuery.trim()) {
@@ -89,7 +101,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
         }
     },
 
-    setDistrictFilter: async (district) => {
+    setDistrictFilter: async (districts) => {
         const { selectedType, searchQuery, selectedDate } = get();
         const params: BlackoutsQueryParams = {};
 
@@ -97,8 +109,8 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
             params.type = selectedType;
         }
 
-        if (district !== "all") {
-            params.district = district;
+        if (districts.length > 0) {
+            params.districts = districts;
         }
 
         if (searchQuery.trim()) {
@@ -115,7 +127,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
             const data = await searchMockBlackouts(params);
             set({
                 filteredBlackouts: data,
-                selectedDistrict: district,
+                selectedDistricts: districts,
                 isLoading: false,
             });
         } catch {
@@ -124,15 +136,15 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     },
 
     searchBlackouts: async (query) => {
-        const { selectedType, selectedDistrict, selectedDate } = get();
+        const { selectedType, selectedDistricts, selectedDate } = get();
         const params: BlackoutsQueryParams = {};
 
         if (selectedType !== "all") {
             params.type = selectedType;
         }
 
-        if (selectedDistrict !== "all") {
-            params.district = selectedDistrict;
+        if (selectedDistricts.length > 0) {
+            params.districts = selectedDistricts;
         }
 
         if (query.trim()) {
@@ -158,30 +170,30 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     },
 
     setDateFilter: async (value) => {
-        const { selectedType, selectedDistrict, searchQuery } = get();
-        const params: BlackoutsQueryParams = {};
-
-        if (selectedType !== "all") {
-            params.type = selectedType;
-        }
-
-        if (selectedDistrict !== "all") {
-            params.district = selectedDistrict;
-        }
-
-        if (searchQuery.trim()) {
-            params.query = searchQuery;
-        }
-
-        if (value) {
-            params.startDate = value.format("YYYY-MM-DD");
+        if (!value) {
+            set({
+                blackouts: [],
+                filteredBlackouts: [],
+                selectedDate: null,
+            });
+            return;
         }
 
         set({ isLoading: true, error: null, selectedDate: value });
 
         try {
-            const data = await searchMockBlackouts(params);
+            const today = dayjs().startOf('day');
+            let date: string;
+
+            if (value.isBefore(today)) {
+                date = value.hour(23).minute(59).second(59).millisecond(0).toISOString();
+            } else {
+                date = dayjs().toISOString();
+            }
+
+            const data = await getBlackoutsByDate(date);
             set({
+                blackouts: data,
                 filteredBlackouts: data,
                 isLoading: false,
             });
@@ -193,7 +205,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     clearFilters: () => {
         set({
             selectedType: "all",
-            selectedDistrict: "all",
+            selectedDistricts: [],
             searchQuery: "",
         });
         get().setDateFilter(dayjs());

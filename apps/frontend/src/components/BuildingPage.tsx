@@ -92,7 +92,7 @@ const BuildingPage = () => {
                     <p><strong>Район:</strong> {blackout.district}</p>
                     <p><strong>Народный район:</strong> {blackout.folk_district}</p>
                     <p><strong>Большой народный район:</strong> {blackout.big_folk_district}</p>
-                    <p><strong>Координаты:</strong> {blackout.coordinate.latitude.toFixed(6)}, {blackout.coordinate.longitude.toFixed(6)}</p>
+                    <p><strong>Координаты:</strong> {blackout.coordinates.latitude.toFixed(6)}, {blackout.coordinates.longitude.toFixed(6)}</p>
                   </div>
                 </div>
               </div>

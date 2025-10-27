@@ -1,8 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+  safelist: [
+    "bg-orange-100",
+    "hover:bg-slate-100",
+    "hover:bg-[#e47036]",
+    "disabled:cursor-not-allowed",
+    "disabled:opacity-60",
+    "text-orange-500",
+    "text-slate-500",
   ],
   theme: {
     extend: {
