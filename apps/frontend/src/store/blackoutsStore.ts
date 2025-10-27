@@ -102,7 +102,16 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     },
 
     setDistrictFilter: async (districts) => {
-        const { selectedType, searchQuery, selectedDate } = get();
+        const { selectedType, searchQuery, selectedDate, blackouts } = get();
+
+        if (districts.length === 0) {
+            set({
+                selectedDistricts: [],
+                filteredBlackouts: blackouts,
+            });
+            return;
+        }
+
         const params: BlackoutsQueryParams = {};
 
         if (selectedType !== "all") {
