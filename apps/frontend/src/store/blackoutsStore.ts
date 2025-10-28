@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import type { Blackout, BlackoutsQueryParams, District } from "../types/types";
-import { getMockBlackouts, searchMockBlackouts } from "../api/mockBlackoutsApi";
+import type { Blackout, BlackoutsQueryParams, District, SimilarAddress } from "../types/types";
+import { getMockBlackouts, searchMockBlackouts } from "../services/mockBlackoutsApi";
 import dayjs from "dayjs";
-import { getDistricts } from "../services/addressesServices";
+import { getDistricts, getSimilarAddresses } from "../services/addressesServices";
 import { getBlackoutsByDate } from "../services/blackoutsServices";
 
 interface BlackoutsState {
@@ -13,12 +13,15 @@ interface BlackoutsState {
     availableDistricts: District[];
     searchQuery: string;
     selectedDate: dayjs.Dayjs | null;
+    similarAddresses: SimilarAddress[];
     isLoading: boolean;
     error: string | null;
 
     // Actions
     fetchBlackouts: () => Promise<void>;
     fetchDistricts: () => Promise<void>;
+    fetchSimilarAddresses: (query: string) => Promise<void>;
+    clearSimilarAddresses: () => void;
     setTypeFilter: (type: BlackoutsQueryParams["type"] | "all") => Promise<void>;
     setDistrictFilter: (districts: string[]) => Promise<void>;
     searchBlackouts: (query: string) => Promise<void>;
@@ -35,6 +38,7 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
     availableDistricts: [],
     searchQuery: "",
     selectedDate: dayjs(),
+    similarAddresses: [],
     isLoading: false,
     error: null,
 
@@ -65,6 +69,24 @@ export const useBlackoutsStore = create<BlackoutsState>((set, get) => ({
             console.error("Failed to fetch districts:", error);
             set({ error: "Не удалось загрузить список районов" });
         }
+    },
+
+    fetchSimilarAddresses: async (query: string) => {
+        if (query.length < 3) {
+            set({ similarAddresses: [] });
+            return;
+        }
+        try {
+            const addresses = await getSimilarAddresses(query);
+            set({ similarAddresses: addresses });
+        } catch (error) {
+            console.error("Failed to fetch similar addresses:", error);
+            set({ error: "Не удалось загрузить похожие адреса" });
+        }
+    },
+
+    clearSimilarAddresses: () => {
+        set({ similarAddresses: [] });
     },
 
     setTypeFilter: async (type) => {
