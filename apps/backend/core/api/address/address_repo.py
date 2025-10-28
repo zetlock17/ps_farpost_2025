@@ -1,12 +1,13 @@
-from models.models import (
+from sqlalchemy import or_, select, union
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.geo import (
     BigFolkDistrictOrm,
     BuildingOrm,
     DistrictOrm,
     FolkDistrictOrm,
     StreetOrm,
 )
-from sqlalchemy import or_, select, union
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AddressRepository:
@@ -23,18 +24,16 @@ class AddressRepository:
         )
 
         if input:
-            
             input_parts = input.split()
 
             for part in input_parts:
                 search_pattern = f"%{part}%"
-            
                 street_condition = StreetOrm.name.ilike(search_pattern)
                 building_number_condition = BuildingOrm.number.ilike(search_pattern)
                 combined_condition = or_(street_condition, building_number_condition)
-                
-                stmt = stmt.where(combined_condition)
 
+                stmt = stmt.where(combined_condition)
+        
         result = await self.session.execute(stmt)
         addresses = result.mappings().all() 
 

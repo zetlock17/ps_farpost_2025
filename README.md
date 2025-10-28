@@ -24,6 +24,10 @@ source venv/bin/activate
 Из папки backend введите команду:
 ```pip install -r requirements.txt```
 
-4.**Запуск приложения**
+4.**Заполнение окружения**
+Создайте файл с расширением .env в корне проекта
+Заполните по примеру из .env.example файла 
+
+5.**Запуск приложения**
 Из папки backend/core введите команду:
 ```uvicorn app:app --host 0.0.0.0 --port 8001 --reload```
