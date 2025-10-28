@@ -13,6 +13,7 @@ import MapOfBlackouts from "./MapOfBlackouts";
 import { useBlackoutsStore } from "../store/blackoutsStore";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import Sidebar from "./Sidebar";
+import Header from "./Header";
 
 dayjs.locale("ru");
 
@@ -137,6 +138,7 @@ const TaxiAggregatorLayout = () => {
             }}
         >
             <div className="relative h-screen w-full bg-slate-900">
+                <Header />
                 <MapOfBlackouts variant="fullscreen" showViewToggle={false} className="h-full" />
                 
                 {isDesktop && <Sidebar />}
