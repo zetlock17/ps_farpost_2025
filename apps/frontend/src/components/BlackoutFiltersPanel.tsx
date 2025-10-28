@@ -101,7 +101,7 @@ const BlackoutFiltersPanel = () => {
                         type="text"
                         value={draftQuery}
                         onChange={(event) => setDraftQuery(event.target.value)}
-                        placeholder="Адрес, район или описание"
+                        placeholder="Введите адрес"
                         className="h-12 w-full rounded-xl border border-slate-200 bg-white px-5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#F97D41] focus:outline-none"
                     />
                     {similarAddresses.length > 0 && (

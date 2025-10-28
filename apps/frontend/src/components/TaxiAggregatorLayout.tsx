@@ -17,6 +17,8 @@ import Header from "./Header";
 
 import MobileMenu from "./MobileMenu";
 
+import BlackoutFiltersPanel from "./BlackoutFiltersPanel";
+
 dayjs.locale("ru");
 
 const PANEL_MIN_HEIGHT = 25;
@@ -176,12 +178,14 @@ const TaxiAggregatorLayout = () => {
                                         <h2 className="text-xl font-semibold text-slate-900">Фильтр отключений</h2>
                                         <span className="text-sm font-medium text-slate-500">{resultLabel}</span>
                                     </div>
-                                    
                                     {error && (
                                         <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
                                             {error}
                                         </div>
                                     )}
+                                    <div className="mt-2">
+                                        <BlackoutFiltersPanel />
+                                    </div>
                                 </div>
                             </div>
                         </div>
