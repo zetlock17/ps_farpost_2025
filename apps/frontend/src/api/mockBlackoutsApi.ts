@@ -7,13 +7,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-01-01 18:00:00",
     description: "Плановое отключение горячей воды",
     type: "hot_water",
-    building_number: 115,
+    building_number: "115",
     street: "Олега Кошевого",
     district: "Первомайский",
     folk_district: "Центр",
     big_folk_district: "Центральный",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.118149232314195,
       longitude: 131.91705567259487
     }
@@ -24,13 +24,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-01-03 18:00:00",
     description: "Конец света",
     type: "electricity",
-    building_number: 28,
+    building_number: "28",
     street: "Алеутская",
     district: "Первореченский",
     folk_district: "Вторая речка",
     big_folk_district: "Первореченский",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.16961073676316,
       longitude: 131.91495033291815
     }
@@ -41,13 +41,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-05-03 18:00:00",
     description: "Ремонт системы холодного водоснабжения",
     type: "cold_water",
-    building_number: 42,
+    building_number: "42",
     street: "Океанский проспект",
     district: "Первореченский",
     folk_district: "Океанская",
     big_folk_district: "Первореченский",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.18063759738267,
       longitude: 131.92124785113728
     }
@@ -58,13 +58,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-01-06 12:00:00",
     description: "Плановое отключение отопления",
     type: "heat",
-    building_number: 7,
+    building_number: "7",
     street: "Пологая",
     district: "Ленинский",
     folk_district: "Эгершельд",
     big_folk_district: "Ленинский",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.17903755954418,
       longitude: 131.91691874069434
     }
@@ -75,13 +75,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-01-07 12:00:00",
     description: "Техническое обслуживание системы горячего водоснабжения",
     type: "hot_water",
-    building_number: 33,
+    building_number: "33",
     street: "Русская",
     district: "Фрунзенский",
     folk_district: "Русская",
     big_folk_district: "Фрунзенский",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.178232189099894,
       longitude: 131.91783887186472
     }
@@ -92,13 +92,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-01-09 12:00:00",
     description: "Плановые работы на электроподстанции хыхых",
     type: "electricity",
-    building_number: 55,
+    building_number: "55",
     street: "100 лет Владивостоку",
     district: "Советский",
     folk_district: "Снеговая падь",
     big_folk_district: "Советский",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.1888338,
       longitude: 131.91752145
     }
@@ -109,13 +109,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-01-12 12:00:00",
     description: "Замена участка водопровода",
     type: "cold_water",
-    building_number: 12,
+    building_number: "12",
     street: "Партизанский проспект",
     district: "Первомайский",
     folk_district: "Луговая",
     big_folk_district: "Первомайский",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.189505131334414,
       longitude: 131.91565886820456
     }
@@ -126,13 +126,13 @@ const mockBlackouts: Blackout[] = [
     end_date: "2018-01-12 12:00:00",
     description: "Ремонт теплотрассы",
     type: "heat",
-    building_number: 89,
+    building_number: "89",
     street: "Борисенко",
     district: "Ленинский",
     folk_district: "Борисенко",
     big_folk_district: "Ленинский",
     city: "Владивосток",
-    coordinate: {
+    coordinates: {
       latitude: 43.1908353876483,
       longitude: 131.91714886267664
     }
@@ -148,9 +148,13 @@ function filterBlackouts(params?: BlackoutsQueryParams): Blackout[] {
     );
   }
 
-  if (params?.district) {
+  if (params?.districts && params.districts.length > 0) {
+    const lowerCaseDistricts = params.districts.map((d) => d.toLowerCase());
     filteredBlackouts = filteredBlackouts.filter(
-      (blackout) => blackout.district.toLowerCase() === params.district?.toLowerCase()
+      (blackout) =>
+        lowerCaseDistricts.includes(blackout.district.toLowerCase()) ||
+        lowerCaseDistricts.includes(blackout.folk_district.toLowerCase()) ||
+        lowerCaseDistricts.includes(blackout.big_folk_district.toLowerCase())
     );
   }
 

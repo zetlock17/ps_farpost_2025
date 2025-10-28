@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { FilterButton, Select } from "ui-kit";
+import { FilterButton, MultiSelect, Select } from "ui-kit";
+import type { Option } from "ui-kit";
 import { useBlackoutsStore } from "../store/blackoutsStore";
 import type { BlackoutsQueryParams } from "../types/types";
 import DateFilter from "./DateFilter";
@@ -18,7 +19,7 @@ const BlackoutFiltersPanel = () => {
     const searchBlackouts = useBlackoutsStore((state) => state.searchBlackouts);
     const clearFilters = useBlackoutsStore((state) => state.clearFilters);
     const selectedType = useBlackoutsStore((state) => state.selectedType);
-    const selectedDistrict = useBlackoutsStore((state) => state.selectedDistrict);
+    const selectedDistricts = useBlackoutsStore((state) => state.selectedDistricts);
     const availableDistricts = useBlackoutsStore((state) => state.availableDistricts);
     const isLoading = useBlackoutsStore((state) => state.isLoading);
     const searchQuery = useBlackoutsStore((state) => state.searchQuery);
@@ -29,21 +30,22 @@ const BlackoutFiltersPanel = () => {
     const hasActiveFilters = useMemo(() => {
         return (
             selectedType !== "all" ||
-            selectedDistrict !== "all" ||
+            selectedDistricts.length > 0 ||
             searchQuery.trim().length > 0 ||
             selectedDate !== null
         );
-    }, [selectedType, selectedDistrict, selectedDate, searchQuery]);
+    }, [selectedType, selectedDistricts, selectedDate, searchQuery]);
 
     const districtOptions = useMemo(() => {
-        return [
-            { value: "all", label: "Все районы" },
-            ...availableDistricts.map((district) => ({
-                value: district,
-                label: district,
-            })),
-        ];
+        return availableDistricts.map((district) => ({
+            value: district.name,
+            label: district.name,
+        }));
     }, [availableDistricts]);
+
+    const selectedDistrictOptions = useMemo(() => {
+        return districtOptions.filter((option) => selectedDistricts.includes(option.value));
+    }, [districtOptions, selectedDistricts]);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -54,10 +56,11 @@ const BlackoutFiltersPanel = () => {
         void setTypeFilter(value as BlackoutsQueryParams["type"] | "all");
     };
 
-    const handleDistrictSelect = (value: string) => {
-        void setDistrictFilter(value === "all" ? "all" : value);
+    const handleDistrictSelect = (options: readonly Option[]) => {
+        const values = options.map((option) => option.value);
+        void setDistrictFilter(values);
     };
-    
+
     const handleClear = () => {
         setDraftQuery("");
         clearFilters();
@@ -89,12 +92,13 @@ const BlackoutFiltersPanel = () => {
                     options={typeOptions}
                 />
 
-                <Select
+                <MultiSelect
                     id="district-select"
                     label="Район"
-                    value={selectedDistrict}
+                    value={selectedDistrictOptions}
                     onChange={handleDistrictSelect}
                     options={districtOptions}
+                    placeholder="Выберите район"
                 />
 
                 <DateFilter />

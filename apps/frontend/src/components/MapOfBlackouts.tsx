@@ -106,9 +106,9 @@ const MapOfBlackouts = ({
 
         // Добавляем метки для каждого отключения
         filteredBlackouts.forEach((blackout) => {
-          if (blackout.coordinate?.latitude && blackout.coordinate?.longitude) {
+          if (blackout.coordinates?.latitude && blackout.coordinates?.longitude) {
             const placemark = new window.ymaps.Placemark(
-              [blackout.coordinate.latitude, blackout.coordinate.longitude],
+              [blackout.coordinates.latitude, blackout.coordinates.longitude],
               {
                 balloonContentHeader: `<strong>${typeLabels[blackout.type]}</strong>`,
                 balloonContentBody: `

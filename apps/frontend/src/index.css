@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import "ui-kit/src/index.css";
+@import "tailwindcss";
 
 body {
     font-family: 'Montserrat', sans-serif;

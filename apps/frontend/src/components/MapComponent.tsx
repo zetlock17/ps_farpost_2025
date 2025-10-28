@@ -1,10 +1,10 @@
-import BlackoutsFilters from "./BlackoutsFilters"
+import BlackoutFiltersPanel from "./BlackoutFiltersPanel"
 import MapOfBlackouts from "./MapOfBlackouts"
 
 const MapComponent = () => {
   return (
     <>
-        <BlackoutsFilters />
+        <BlackoutFiltersPanel />
         <MapOfBlackouts />
     </>
   )

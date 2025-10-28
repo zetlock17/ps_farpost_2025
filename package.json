@@ -9,5 +9,9 @@
     "dev": "npm run dev --workspace=apps/frontend",
     "build": "npm run build --workspace=packages/ui-kit && npm run build --workspace=apps/frontend",
     "preview": "npm run preview --workspace=apps/frontend"
+  },
+  "dependencies": {
+    "@types/react-select": "^5.0.0",
+    "react-select": "^5.10.2"
   }
 }
