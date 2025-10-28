@@ -15,6 +15,8 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
+import MobileMenu from "./MobileMenu";
+
 dayjs.locale("ru");
 
 const PANEL_MIN_HEIGHT = 25;
@@ -36,6 +38,12 @@ const TaxiAggregatorLayout = () => {
     
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const isMobile = !isDesktop;
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
 
     useEffect(() => {
         return () => {
@@ -138,7 +146,8 @@ const TaxiAggregatorLayout = () => {
             }}
         >
             <div className="relative h-screen w-full bg-slate-900">
-                <Header />
+                <Header toggleMenu={toggleMenu} />
+                <MobileMenu isOpen={isMenuOpen} onClose={toggleMenu} />
                 <MapOfBlackouts variant="fullscreen" showViewToggle={false} className="h-full" />
                 
                 {isDesktop && <Sidebar />}
