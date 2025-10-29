@@ -62,3 +62,13 @@ class AddressRepository:
         districts =( await self.session.execute(union_stmt)).mappings().all()
 
         return districts
+    
+    async def get_building(self, building_id: str | None = None):
+        stmt = select(BuildingOrm)
+
+        if building_id:
+            stmt = stmt.where(BuildingOrm.id == building_id)
+
+        building = (await self.session.execute(stmt)).first()
+
+        return building

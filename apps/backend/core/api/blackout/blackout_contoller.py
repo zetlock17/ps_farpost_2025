@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils.common_util import exception_handler
 from utils.db_util import get_session_obj, get_session_weather_obj
@@ -14,7 +14,11 @@ from .blackout_service import BlackoutService
 blackout_contoller = APIRouter()
 
 
-@blackout_contoller.get("/")
+@blackout_contoller.get(
+    "/",
+    summary="Получение списка всех отключений с возможностью фильтрации",
+    response_description="Список отключений, отфильтрованных по типу, дате или району.",
+)
 @exception_handler
 async def get_blackout_list(
     filter: BlackoutListFilterSchema = Depends(BlackoutListFilterSchema),
@@ -24,7 +28,24 @@ async def get_blackout_list(
     blackouts = await blackout_service.get_blackout_list(filter=filter)
     return blackouts
 
-@blackout_contoller.get("/by_address")
+
+@blackout_contoller.get(
+    "/by_address",
+    summary="Получение актуальных отключений для конкретного здания с прогнозом",
+    response_description="Актуальные отключения для здания, прогнозная дата окончания и список соседних отключений.",
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "content": {
+                "application/json": {
+                    "example": {"detail": 'объект "здание" не найден'}
+                }
+            }
+        },
+        status.HTTP_200_OK: {
+            "description": "Успешный возврат данных об отключениях."
+        }
+    }
+)
 @exception_handler
 async def get_blackout_by_address(
     filter: BlackoutByAddressFilterSchema = Depends(BlackoutByAddressFilterSchema),
