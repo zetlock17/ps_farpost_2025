@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 
+from common.common_exceptions import NotFoundHttpException
 from nn.prediction_service import predict_duration
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..address.address_service import AddressService
 from ..weather.weather_service import WeatherService
 from .blackout_repo import BlackoutRepository
 from .blackout_schema import (
@@ -18,6 +20,7 @@ class BlackoutService:
     def __init__(self, session: AsyncSession, weather_session: AsyncSession | None = None):
         self.session = session
         self.blackout_repo = BlackoutRepository(session=self.session)
+        self.address_service = AddressService(session=self.session)
         self.weather_service = WeatherService(session=weather_session)
         
 
@@ -27,7 +30,12 @@ class BlackoutService:
     
     async def get_blackouts_by_address(self, filter: BlackoutByAddressFilterSchema) -> BlackoutByAddressListSchema:
         
-        target_blackouts = await self.blackout_repo.get_target_blackouts(filter=filter)
+        building = await self.address_service.get_building(building_id=filter.building_id)
+        print(building)
+        if building is None:
+            raise NotFoundHttpException(name="здание")
+
+        target_blackouts = await self.blackout_repo.get_blackouts_by_address(filter=filter)
         
         target_lat, target_lon = None, None
 

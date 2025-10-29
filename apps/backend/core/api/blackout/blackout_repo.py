@@ -98,7 +98,7 @@ class BlackoutRepository:
 
         return blackouts
 
-    async def get_target_blackouts(self, filter: BlackoutByAddressFilterSchema) -> list[RowMapping]:
+    async def get_blackouts_by_address(self, filter: BlackoutByAddressFilterSchema) -> list[RowMapping]:
         stmt = (
             select(
                 BlackoutOrm.id,
