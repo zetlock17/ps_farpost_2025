@@ -35,6 +35,7 @@ class BlackoutRepository:
                 BlackoutOrm.end_date,
                 BlackoutOrm.description,
                 BlackoutOrm.type,
+                BuildingOrm.id.label("building_id"),
                 BuildingOrm.number.label("building_number"),
                 type_coerce(
                 func.json_object(
