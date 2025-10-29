@@ -13,6 +13,11 @@ import MapOfBlackouts from "./MapOfBlackouts";
 import { useBlackoutsStore } from "../store/blackoutsStore";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import Sidebar from "./Sidebar";
+import Header from "./Header";
+
+import MobileMenu from "./MobileMenu";
+
+import BlackoutFiltersPanel from "./BlackoutFiltersPanel";
 
 dayjs.locale("ru");
 
@@ -35,6 +40,12 @@ const TaxiAggregatorLayout = () => {
     
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const isMobile = !isDesktop;
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
 
     useEffect(() => {
         return () => {
@@ -137,6 +148,8 @@ const TaxiAggregatorLayout = () => {
             }}
         >
             <div className="relative h-screen w-full bg-slate-900">
+                <Header toggleMenu={toggleMenu} />
+                <MobileMenu isOpen={isMenuOpen} onClose={toggleMenu} />
                 <MapOfBlackouts variant="fullscreen" showViewToggle={false} className="h-full" />
                 
                 {isDesktop && <Sidebar />}
@@ -165,12 +178,14 @@ const TaxiAggregatorLayout = () => {
                                         <h2 className="text-xl font-semibold text-slate-900">Фильтр отключений</h2>
                                         <span className="text-sm font-medium text-slate-500">{resultLabel}</span>
                                     </div>
-                                    
                                     {error && (
                                         <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
                                             {error}
                                         </div>
                                     )}
+                                    <div className="mt-2">
+                                        <BlackoutFiltersPanel />
+                                    </div>
                                 </div>
                             </div>
                         </div>
