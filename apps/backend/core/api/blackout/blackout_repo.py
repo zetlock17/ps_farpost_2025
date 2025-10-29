@@ -1,5 +1,7 @@
-from models.blackout import BlackoutBuildingOrm, BlackoutOrm
+from datetime import datetime
+
 from config.settings import COORD_DELTA
+from models.blackout import BlackoutBuildingOrm, BlackoutOrm
 from models.geo import (
     BigFolkDistrictOrm,
     BuildingOrm,
@@ -9,18 +11,19 @@ from models.geo import (
     StreetOrm,
 )
 from sqlalchemy import JSON, Float, and_, func, or_, select, type_coerce
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine.row import RowMapping
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .blackout_schema import (
-    AddressSchema,
     BlackoutByAddressFilterSchema,
     BlackoutListFilterSchema,
+    NeighborBlackoutSchema,
 )
 
+# ... (Оставлен метод get_blackout_list без изменений)
 
 class BlackoutRepository:
-
+    
     def __init__(self, session: AsyncSession):
         self.session = session
 
@@ -34,17 +37,17 @@ class BlackoutRepository:
                 BlackoutOrm.type,
                 BuildingOrm.number.label("building_number"),
                 type_coerce(
-                    func.json_object(
-                        "latitude",
-                        func.coalesce(
-                            func.json_extract(BuildingOrm.coordinates, "$[0].lat"), 0.0
-                        ),
-                        "longitude",
-                        func.coalesce(
-                            func.json_extract(BuildingOrm.coordinates, "$[0].lon"), 0.0
-                        ),
-                    ),
-                    JSON,
+                func.json_object(
+                "latitude",
+                func.coalesce(
+                func.json_extract(BuildingOrm.coordinates, "$[0].lat"), 0.0
+                ),
+                "longitude",
+                func.coalesce(
+                func.json_extract(BuildingOrm.coordinates, "$[0].lon"), 0.0
+                ),
+                ),
+                JSON,
                 ).label("coordinates"),
                 StreetOrm.name.label("street"),
                 DistrictOrm.name.label("district"),
@@ -90,14 +93,12 @@ class BlackoutRepository:
                     BigFolkDistrictOrm.name == filter.district,
                 )
             )
-        
 
         blackouts = await self.session.execute(stmt)
 
         return blackouts
 
     async def get_target_blackouts(self, filter: BlackoutByAddressFilterSchema) -> list[RowMapping]:
-
         stmt = (
             select(
                 BlackoutOrm.id,
@@ -124,6 +125,7 @@ class BlackoutRepository:
                 FolkDistrictOrm.name.label("folk_district"),
                 BigFolkDistrictOrm.name.label("big_folk_district"),
                 CityOrm.name.label("city"),
+                BuildingOrm.id.label("building_id_from_orm")
             )
             .join(
                 BlackoutBuildingOrm,
@@ -146,8 +148,7 @@ class BlackoutRepository:
             .join(CityOrm, CityOrm.id == BuildingOrm.city_id)
             .where(
                 and_(
-                    StreetOrm.name == filter.street,
-                    BuildingOrm.number == filter.building,
+                    BuildingOrm.id == filter.building_id, 
                     BlackoutOrm.start_date <= filter.date, 
                     filter.date<= BlackoutOrm.end_date
                 )
@@ -155,32 +156,50 @@ class BlackoutRepository:
         )
         return (await self.session.execute(stmt)).mappings().all()
 
-    async def get_neighbor_addresses(self, target_lat: float, target_lon: float, filter: BlackoutByAddressFilterSchema) -> list[AddressSchema]:
-        
+    async def get_neighbor_blackouts(self, target_lat: float, target_lon: float, exclude_building_id: str, date: datetime, limit: int | None):
 
-        neighbor_stmt = (
-            select(StreetOrm.name, BuildingOrm.number)
+
+        neighbor_blackout_stmt = (
+            select(
+                StreetOrm.name.label("street"),
+                BuildingOrm.number.label("building"),
+                BuildingOrm.id.label("building_id"),
+                BlackoutOrm.type.label("type"),
+            )
             .join(StreetOrm, StreetOrm.id == BuildingOrm.street_id)
+            .join(
+                BlackoutBuildingOrm,
+                BlackoutBuildingOrm.building_id == BuildingOrm.id
+            )
+            .join(
+                BlackoutOrm,
+                BlackoutOrm.id == BlackoutBuildingOrm.blackout_id
+            )
             .where(
                 and_(
                     func.json_extract(BuildingOrm.coordinates, "$[0].lat").cast(Float) >= target_lat - COORD_DELTA,
                     func.json_extract(BuildingOrm.coordinates, "$[0].lat").cast(Float) <= target_lat + COORD_DELTA,
                     func.json_extract(BuildingOrm.coordinates, "$[0].lon").cast(Float) >= target_lon - COORD_DELTA,
                     func.json_extract(BuildingOrm.coordinates, "$[0].lon").cast(Float) <= target_lon + COORD_DELTA,
-                    or_(
-                        StreetOrm.name != filter.street,
-                        BuildingOrm.number != filter.building,
-                    ),
+                    
+                    BuildingOrm.id != exclude_building_id, 
+                    
+                    BlackoutOrm.start_date <= date, 
+                    date <= BlackoutOrm.end_date
                 )
             )
-            .distinct()
-            .limit(filter.limit_neighbors) 
+            .limit(limit) 
         )
         
-        neighbor_results = (await self.session.execute(neighbor_stmt)).all()
+        neighbor_results = (await self.session.execute(neighbor_blackout_stmt)).all()
         
         neighbor_addresses = [
-            AddressSchema(street=row.name, building=row.number)
+            NeighborBlackoutSchema(
+                street=row.street, 
+                building=row.building, 
+                building_id=row.building_id,
+                type=row.type
+            )
             for row in neighbor_results
         ]
         

@@ -3,10 +3,11 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from ..address.address_schema import AddressSchema
 
-class AddressSchema(BaseModel):
-    street: str = Field(...)
-    building: str = Field(...)
+
+class NeighborBlackoutSchema(AddressSchema):
+    type: Literal["hot_water", "cold_water", "electricity", "heat"]
 
 class CoordinateSchema(BaseModel):
     latitude: float = Field(...)
@@ -23,8 +24,7 @@ class BlackoutListFilterSchema(BaseModel):
 
 class BlackoutByAddressFilterSchema(BaseModel):
     date: datetime = Field(...)
-    street: str = Field(...)
-    building: str = Field(...)
+    building_id: str = Field(...)
     limit_neighbors: int | None = Field(None)
 
 class BlackoutInfoSchema(BaseModel):
@@ -71,5 +71,5 @@ class BlackoutByAddressInfoSchema(BlackoutInfoSchema):
 
 class BlackoutByAddressListSchema(BaseModel):
     blackouts: list[BlackoutByAddressInfoSchema] = Field(...)
-    neighbor_addresses: list[AddressSchema] = Field(...)
+    neighbor_blackouts: list[NeighborBlackoutSchema] = Field(...)
 

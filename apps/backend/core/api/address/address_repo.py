@@ -1,6 +1,3 @@
-from sqlalchemy import or_, select, union
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from models.geo import (
     BigFolkDistrictOrm,
     BuildingOrm,
@@ -8,6 +5,8 @@ from models.geo import (
     FolkDistrictOrm,
     StreetOrm,
 )
+from sqlalchemy import or_, select, union
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AddressRepository:
@@ -17,8 +16,9 @@ class AddressRepository:
 
     async def get_similar_addresses(self, input: str | None):
         stmt = select(
-            BuildingOrm.number.label("number"), 
-            StreetOrm.name.label("street")
+            BuildingOrm.number.label("building"), 
+            StreetOrm.name.label("street"),
+            BuildingOrm.id.label('building_id')
         ).join(
             StreetOrm, StreetOrm.id == BuildingOrm.street_id
         )
@@ -27,10 +27,23 @@ class AddressRepository:
             input_parts = input.split()
 
             for part in input_parts:
-                search_pattern = f"%{part}%"
-                street_condition = StreetOrm.name.ilike(search_pattern)
-                building_number_condition = BuildingOrm.number.ilike(search_pattern)
-                combined_condition = or_(street_condition, building_number_condition)
+                part_low = part.lower()
+                search_pattern_low = f"%{part_low}%"
+                part_capitalize = part_low.capitalize()
+                search_pattern_capitalize = f"%{part_capitalize}%"
+
+                street_condition_low = StreetOrm.name.ilike(search_pattern_low)
+                street_condition_capitalize = StreetOrm.name.ilike(search_pattern_capitalize)
+
+                building_number_condition_low = BuildingOrm.number.ilike(search_pattern_low)
+                building_number_condition_capitalize = BuildingOrm.number.ilike(search_pattern_capitalize)
+
+                combined_condition = or_(
+                    street_condition_low, 
+                    street_condition_capitalize, 
+                    building_number_condition_low, 
+                    building_number_condition_capitalize
+                )
 
                 stmt = stmt.where(combined_condition)
         
