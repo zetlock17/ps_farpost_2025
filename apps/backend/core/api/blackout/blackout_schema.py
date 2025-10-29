@@ -98,6 +98,11 @@ class BlackoutInfoSchema(BaseModel):
         description="Тип отключенной коммунальной услуги."
     )
 
+    building_id: str = Field(
+        ...,
+        description="Уникальный ID здания",
+        example="b428b92bb123994a56234bb6eeeed414"
+    )
     building_number: str = Field(..., description="Номер дома.", example="118А")
     street: str = Field(..., description="Название улицы.", example="Светланская ул.")
     district: str = Field(..., description="Официальный район города.", example="Ленинский район")
