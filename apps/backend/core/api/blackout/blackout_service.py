@@ -37,16 +37,18 @@ class BlackoutService:
                 target_lat = coords_data.get("latitude")
                 target_lon = coords_data.get("longitude")
 
-        neighbor_addresses = []
+        neighbor_blackouts = [] 
 
         if target_lat is not None and target_lon is not None:
-            neighbor_addresses = await self.blackout_repo.get_neighbor_addresses(
+            neighbor_blackouts = await self.blackout_repo.get_neighbor_blackouts(
                 target_lat=target_lat, 
                 target_lon=target_lon, 
-                filter=filter
+                exclude_building_id=filter.building_id,
+                date = filter.date,
+                limit = filter.limit_neighbors
             )
 
-        blackouts_with_prediction: list[BlackoutByAddressInfoSchema] = []
+        blackouts_with_prediction = []
         
         for blackout in target_blackouts:
             
@@ -96,5 +98,5 @@ class BlackoutService:
 
         return BlackoutByAddressListSchema(
             blackouts=blackouts_with_prediction,
-            neighbor_addresses=neighbor_addresses,
+            neighbor_blackouts=neighbor_blackouts,
         )
