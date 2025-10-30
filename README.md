@@ -14,6 +14,19 @@ docker-compose --profile prod up --build
 docker-compose --profile dev up --build
 ```
 
+### Но если докер не случился (именно на фронте):
+#### Backend
+```
+docker compose up --build
+```
+
+### Frontend
+из корня проекта
+```
+npm run build;
+npm run dev
+```
+
 ## Требования к бэку и фронту - наше мнение
 
 ### Frontend
