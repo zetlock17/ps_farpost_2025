@@ -2,9 +2,13 @@
 ## Запуск проекта
 
 ### DOCKER!!!!!!!!!!!
+#### Production mode
 ```
-Prod: docker-compose --profile prod up --build
-Dev: docker-compose --profile dev up --build
+docker-compose --profile prod up --build
+```
+#### Develop mode
+```
+docker-compose --profile dev up --build
 ```
 
 ## Требования к бэку и фронту - наше мнение
