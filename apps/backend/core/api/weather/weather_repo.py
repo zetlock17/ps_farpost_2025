@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models.weather import WeatherInfoOrm
+from core.models.weather import WeatherInfoOrm
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 

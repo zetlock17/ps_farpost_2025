@@ -2,7 +2,7 @@ import logging
 from functools import wraps
 from http.client import HTTPException
 
-from common.common_exceptions import IntervalServerErrorHttpException
+from core.common.common_exceptions import IntervalServerErrorHttpException
 
 logger = logging.getLogger("uvicorn")
 

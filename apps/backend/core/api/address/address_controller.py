@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from utils.common_util import exception_handler
-from utils.db_util import get_session_obj
+from core.utils.common_util import exception_handler
+from core.utils.db_util import get_session_obj
 
 from .address_schema import AddressSchema, DistrictSchema
 from .address_service import AddressService

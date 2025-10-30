@@ -1,0 +1,52 @@
+name: ps_2025
+
+services:
+    api: 
+        image: api
+        restart: always
+        
+        env_file:
+            - ./.env 
+            
+        environment:
+            DATABASE_PATH: /databases/dataset.db 
+            WEATHER_DATABASE_PATH: /databases/weather.db
+
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "5"
+
+        build: 
+            context: ./apps/backend
+            
+        command: python -m uvicorn core.app:app --host 0.0.0.0 --port 8000 --reload
+        
+        volumes: 
+            - ./apps/backend:/BACKEND 
+
+            - ./databases:/databases 
+            - ./apps/backend/core/logs:/BACKEND/core/logs
+
+        ports:
+            - 8000:8000
+    
+    # frontend:
+
+    #     image: frontend
+
+    #     depends_on:
+    #         - api
+        
+
+    #     build:
+    #         context: . 
+    #         dockerfile: ./apps/frontend/Dockerfile
+    #         target: production
+        
+
+    #     restart: always
+        
+    #     ports:
+    #         - 3000:80

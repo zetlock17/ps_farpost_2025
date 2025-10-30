@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import AsyncGenerator
 
@@ -8,14 +9,10 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 
-ROOT_DIR = Path(__file__).parent.parent.parent.parent.parent
-
-DB_PATH = ROOT_DIR / "databases" / "dataset.db"
+DB_PATH = os.getenv("DATABASE_PATH") 
+WEATHER_DB_PATH = os.getenv("WEATHER_DATABASE_PATH")
 
 DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
-
-WEATHER_DB_PATH = ROOT_DIR / "databases" / "weather.db"
-
 WEATHER_DATABASE_URL = f"sqlite+aiosqlite:///{WEATHER_DB_PATH}"
 
 engine = create_async_engine(DATABASE_URL)

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Text
 from .geo import BuildingOrm
-from utils.db_util import base as Base
+from core.utils.db_util import base as Base
 
 
 class BlackoutOrm(Base):
