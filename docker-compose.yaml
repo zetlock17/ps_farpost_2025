@@ -32,21 +32,49 @@ services:
         ports:
             - 8000:8000
     
-    # frontend:
+    frontend:
 
-    #     image: frontend
+        image: frontend
 
-    #     depends_on:
-    #         - api
+        depends_on:
+            - api
         
 
-    #     build:
-    #         context: . 
-    #         dockerfile: ./apps/frontend/Dockerfile
-    #         target: production
+        build:
+            context: . 
+            dockerfile: ./apps/frontend/Dockerfile
+            target: production
         
 
-    #     restart: always
+        restart: always
         
-    #     ports:
-    #         - 3000:80
+        ports:
+            - 3000:80
+
+        profiles:
+            - prod
+
+    frontend-dev:
+
+        image: frontend-dev
+
+        depends_on:
+            - api
+        
+
+        build:
+            context: . 
+            dockerfile: ./apps/frontend/Dockerfile
+            target: dev
+        
+
+        restart: always
+        
+        volumes:
+            - .:/app
+        
+        ports:
+            - 3000:5173
+
+        profiles:
+            - dev
