@@ -13,7 +13,7 @@ COPY . .
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["npm", "run", "dev", "--workspace=apps/frontend"]
 
 
 FROM node:20-alpine AS builder
