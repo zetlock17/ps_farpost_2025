@@ -2,6 +2,9 @@
 ## Запуск проекта
 
 ### DOCKER!!!!!!!!!!!
+
+0. .env не забудьте добавить пжшка
+
 #### Production mode
 ```
 docker-compose --profile prod up --build
