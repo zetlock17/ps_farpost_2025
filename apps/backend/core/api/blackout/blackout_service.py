@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from common.common_exceptions import NotFoundHttpException
-from nn.prediction_service import predict_duration
+from core.common.common_exceptions import NotFoundHttpException
+from core.nn.prediction_service import predict_duration
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..address.address_service import AddressService

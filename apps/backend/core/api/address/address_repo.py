@@ -1,4 +1,4 @@
-from models.geo import (
+from core.models.geo import (
     BigFolkDistrictOrm,
     BuildingOrm,
     DistrictOrm,

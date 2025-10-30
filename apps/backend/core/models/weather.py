@@ -1,5 +1,5 @@
 from sqlalchemy import Column, DateTime, Integer, Text
-from utils.db_util import base as Base
+from core.utils.db_util import base as Base
 
 
 class WeatherInfoOrm(Base):

@@ -1,7 +1,7 @@
-from api.api import api_controller
+from .api.api import api_controller
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from config.settings import WEB_URL
+from core.config.settings import WEB_URL
 
 app = FastAPI()
 

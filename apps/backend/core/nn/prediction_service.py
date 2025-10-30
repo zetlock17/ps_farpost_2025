@@ -5,9 +5,13 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from gensim.models import Word2Vec
+import os # Добавлен import os для работы с путями
 
 # Этот файл содержит всю логику для предсказания длительности отключений.
 # Он загружает обученные модели и все необходимые для работы артефакты.
+
+# Определяем абсолютный путь к папке, где находится этот скрипт (и все артефакты NN)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Константы и маппинги, определенные при обучении
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -40,18 +44,25 @@ city_mapping = {"Владивосток": 1, "Артем": 2}
 russian_alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 letter_mapping = {letter: i + 1 for i, letter in enumerate(russian_alphabet)}
 
+# Функция для получения абсолютного пути к файлу артефакта
+def get_artifact_path(filename):
+    """Возвращает абсолютный путь к файлу артефакта внутри папки nn."""
+    # Обратите внимание: путь "nn/" из исходного кода удален,
+    # т.к. BASE_DIR уже указывает на папку nn.
+    return os.path.join(BASE_DIR, filename)
+
 TYPE_CONFIGS = {
     "electricity": {
-        "model_path": "nn/improved_duration_predictor_electricity.pth",
-        "scaler_path": "nn/duration_scaler_electricity.joblib",
+        "model_path": get_artifact_path("improved_duration_predictor_electricity.pth"),
+        "scaler_path": get_artifact_path("duration_scaler_electricity.joblib"),
     },
     "cold_water": {
-        "model_path": "nn/improved_duration_predictor_cold_water.pth",
-        "scaler_path": "nn/duration_scaler_cold_water.joblib",
+        "model_path": get_artifact_path("improved_duration_predictor_cold_water.pth"),
+        "scaler_path": get_artifact_path("duration_scaler_cold_water.joblib"),
     },
     "heat": {
-        "model_path": "nn/improved_duration_predictor_heat.pth",
-        "scaler_path": "nn/duration_scaler_heat.joblib",
+        "model_path": get_artifact_path("improved_duration_predictor_heat.pth"),
+        "scaler_path": get_artifact_path("duration_scaler_heat.joblib"),
     },
 }
 
@@ -94,15 +105,17 @@ class ImprovedDurationPredictor(nn.Module):
 # Загрузка артефактов
 # В реальном бэкенде это нужно делать один раз при старте приложения
 try:
-    street_mapping_loaded = joblib.load('nn/street_mapping.joblib')
-    district_mapping_loaded = joblib.load('nn/district_mapping.joblib')
-    w2v_model_loaded = Word2Vec.load("nn/word2vec.model")
-    FEATURE_COLS = joblib.load('nn/feature_cols.joblib')
+    # Использование функции get_artifact_path для всех загружаемых файлов
+    street_mapping_loaded = joblib.load(get_artifact_path('street_mapping.joblib'))
+    district_mapping_loaded = joblib.load(get_artifact_path('district_mapping.joblib'))
+    w2v_model_loaded = Word2Vec.load(get_artifact_path("word2vec.model"))
+    FEATURE_COLS = joblib.load(get_artifact_path('feature_cols.joblib'))
 
     inference_artifacts = {}
     for type_name, config in TYPE_CONFIGS.items():
         try:
             model = ImprovedDurationPredictor(input_dim=len(FEATURE_COLS))
+            # config["model_path"] и config["scaler_path"] теперь содержат абсолютные пути
             checkpoint = torch.load(config["model_path"], map_location=DEVICE)
             model.load_state_dict(checkpoint['model_state_dict'])
             model.to(DEVICE)
@@ -165,7 +178,9 @@ def predict_duration(input_data: dict):
     df["district"] = df["district"].map(district_mapping_loaded)
 
     X = df[FEATURE_COLS]
-    X.fillna(-1, inplace=True)
+    # Используем .loc для избежания SettingWithCopyWarning
+    X.loc[:, FEATURE_COLS] = X[FEATURE_COLS].fillna(-1)
+
 
     X_scaled = scaler.transform(X)
     X_tensor = torch.FloatTensor(X_scaled).to(DEVICE)

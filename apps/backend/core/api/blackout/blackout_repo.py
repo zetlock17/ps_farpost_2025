@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from config.settings import COORD_DELTA
-from models.blackout import BlackoutBuildingOrm, BlackoutOrm
-from models.geo import (
+from core.config.settings import COORD_DELTA
+from core.models.blackout import BlackoutBuildingOrm, BlackoutOrm
+from core.models.geo import (
     BigFolkDistrictOrm,
     BuildingOrm,
     CityOrm,
@@ -126,7 +126,7 @@ class BlackoutRepository:
                 FolkDistrictOrm.name.label("folk_district"),
                 BigFolkDistrictOrm.name.label("big_folk_district"),
                 CityOrm.name.label("city"),
-                BuildingOrm.id.label("building_id_from_orm")
+                BuildingOrm.id.label("building_id")
             )
             .join(
                 BlackoutBuildingOrm,
