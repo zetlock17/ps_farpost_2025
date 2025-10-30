@@ -12,7 +12,7 @@ const StatisticsPage = () => {
     <div className="p-4 pt-20 md:pt-4">
       {isMobile && (
         <button
-          className="mb-4 flex items-center gap-2 text-slate-600 hover:text-orange-500 transition-colors"
+          className="mb-4 flex items-center gap-2 text-primary-gray hover:text-primary-orange transition-colors"
           onClick={() => navigate(-1)}
         >
           <ArrowLeft className="h-5 w-5" />

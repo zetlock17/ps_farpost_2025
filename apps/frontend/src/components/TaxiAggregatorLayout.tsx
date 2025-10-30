@@ -147,7 +147,7 @@ const TaxiAggregatorLayout = () => {
                 },
             }}
         >
-            <div className="relative h-screen w-full bg-slate-900">
+            <div className="relative h-screen w-full bg-primary-black">
                 <Header toggleMenu={toggleMenu} />
                 <MobileMenu isOpen={isMenuOpen} onClose={toggleMenu} />
                 <MapOfBlackouts variant="fullscreen" showViewToggle={false} className="h-full" />
@@ -167,7 +167,7 @@ const TaxiAggregatorLayout = () => {
                                         aria-orientation="horizontal"
                                         aria-disabled={isMobile}
                                         className={`h-1 w-12 rounded-full ${
-                                            isResizing ? "bg-[#F97D41]" : "bg-slate-300"
+                                            isResizing ? "bg-[#F97D41]" : "bg-primary-gray"
                                         } ${isMobile ? "cursor-default" : "cursor-ns-resize"}`}
                                         onPointerDown={handleResizeStart}
                                     />
@@ -175,8 +175,8 @@ const TaxiAggregatorLayout = () => {
 
                                 <div className="flex-1 overflow-y-auto px-5 pb-4 pt-2">
                                     <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between">
-                                        <h2 className="text-xl font-semibold text-slate-900">Фильтр отключений</h2>
-                                        <span className="text-sm font-medium text-slate-500">{resultLabel}</span>
+                                        <h2 className="text-xl font-semibold text-primary-black">Фильтр отключений</h2>
+                                        <span className="text-sm font-medium text-primary-gray">{resultLabel}</span>
                                     </div>
                                     {error && (
                                         <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">

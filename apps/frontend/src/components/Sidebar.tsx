@@ -79,7 +79,7 @@ const Sidebar = () => {
 
     return (
         <div className="fixed left-0 top-0 z-30 flex h-screen">
-            <div className="flex h-full flex-col items-center gap-4 border-r border-slate-200 bg-white p-2">
+            <div className="flex h-full flex-col items-center gap-4 border-r border-gray-200 bg-white p-2">
                 {tabs.map((tab) => (
                     <SidebarButton
                         key={tab.id}
@@ -93,7 +93,7 @@ const Sidebar = () => {
             </div>
             {currentTab?.content && (
                 <div className="w-80 bg-white shadow-lg">
-                    <div className="border-b border-slate-200 p-4">
+                    <div className="border-b border-gray-200 p-4">
                         <div className="flex items-center justify-between">
                             <img
                                 src={logo}
@@ -101,17 +101,17 @@ const Sidebar = () => {
                                 className="h-12 w-auto -mt-4"
                             />
                             <div className="text-right">
-                                <p className="font-medium text-orange-500">
+                                <p className="font-medium text-[#F97D41]">
                                     Отключение воды и света
                                 </p>
-                                <p className="font-bold text-slate-800">
+                                <p className="font-bold text-primary-black">
                                     Владивосток
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div className="border-b border-slate-200 px-4 pt-3 pb-0">
-                        <h2 className="text-xl font-bold text-slate-800">
+                    <div className="border-b border-gray-200 px-4 pt-3 pb-0">
+                        <h2 className="text-xl font-bold text-primary-black">
                             {currentTab?.title}
                         </h2>
                     </div>

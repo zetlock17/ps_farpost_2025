@@ -62,7 +62,7 @@ const MobileMenu: FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               key={item.id}
               to={item.path}
               state={item.state}
-              className="flex items-center gap-3 rounded-md p-2 text-base font-medium text-slate-700 hover:bg-slate-100"
+              className="flex items-center gap-3 rounded-md p-2 text-base font-medium text-primary-black hover:bg-primary-gray"
               onClick={onClose}
             >
               {item.icon}

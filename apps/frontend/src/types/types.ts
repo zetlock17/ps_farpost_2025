@@ -9,6 +9,7 @@ export interface Blackout {
   end_date: string;
   description: string;
   type: "hot_water" | "cold_water" | "electricity" | "heat";
+  building_id: string;
   building_number: string;
   street: string;
   district: string;
@@ -16,6 +17,10 @@ export interface Blackout {
   big_folk_district: string;
   city: string;
   coordinates: Coordinate;
+}
+
+export interface BlackoutWithPrediction extends Blackout {
+  predicted_end_date: string;
 }
 
 export interface BlackoutsQueryParams {
@@ -27,7 +32,20 @@ export interface BlackoutsQueryParams {
 
 export interface SimilarAddress {
   street: string;
-  number: string;
+  building: string;
+  building_id: string;
+}
+
+export interface NeighborBlackout {
+  street: string;
+  building: string;
+  building_id: string;
+  type: "hot_water" | "cold_water" | "electricity" | "heat";
+}
+
+export interface AddressInfo {
+  blackouts: BlackoutWithPrediction[];
+  neighbor_blackouts: NeighborBlackout[];
 }
 
 export interface District {

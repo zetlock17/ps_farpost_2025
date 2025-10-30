@@ -119,7 +119,7 @@ const MapOfBlackouts = ({
                       🕐 ${new Date(blackout.start_date).toLocaleDateString('ru-RU')} - 
                       ${new Date(blackout.end_date).toLocaleDateString('ru-RU')}
                     </p>
-                    <a href="/building/?id=${blackout.id}" style="color: #007bff; text-decoration: none;">
+                    <a href="/address/${blackout.building_id}" style="color: #007bff; text-decoration: none;">
                       Подробнее →
                     </a>
                   </div>

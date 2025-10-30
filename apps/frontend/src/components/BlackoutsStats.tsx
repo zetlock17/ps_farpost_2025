@@ -126,7 +126,7 @@ const BlackoutsStats = () => {
         </div>
       </div>
 
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <h3 className="text-lg font-semibold mb-3">Список отключений</h3>
         <div className="flex flex-col gap-2">
           {filteredBlackouts.map((blackout) => (
@@ -148,7 +148,7 @@ const BlackoutsStats = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {filteredBlackouts.length === 0 && (
         <div className="text-center py-10 text-gray-400">

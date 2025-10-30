@@ -5,6 +5,7 @@ import { useBlackoutsStore } from "../store/blackoutsStore";
 import type { BlackoutsQueryParams } from "../types/types";
 import DateFilter from "./DateFilter";
 import { useClickOutside } from "../hooks/useClickOutside";
+import { Link } from "react-router-dom";
 
 const typeOptions: { value: "hot_water" | "cold_water" | "electricity" | "heat" | "all"; label: string }[] = [
     { value: "all", label: "Все" },
@@ -102,25 +103,26 @@ const BlackoutFiltersPanel = () => {
                         value={draftQuery}
                         onChange={(event) => setDraftQuery(event.target.value)}
                         placeholder="Введите адрес"
-                        className="h-12 w-full rounded-xl border border-slate-200 bg-white px-5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#F97D41] focus:outline-none"
+                        className="h-12 w-full rounded-xl border border-gray-200 bg-white px-5 text-sm text-primary-black placeholder:text-gray-400 focus:border-[#F97D41] focus:outline-none"
                     />
                     {similarAddresses.length > 0 && (
-                        <ul className="absolute z-10 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg">
+                        <div className="absolute left-0 right-0 z-10 mt-1 rounded-xl border border-gray-200 bg-white shadow-lg">
                             {similarAddresses.map((address) => (
-                                <li
-                                    key={address.street + address.number}
-                                    className="cursor-pointer px-4 py-2 hover:bg-slate-100"
+                                <Link
+                                    to={`/address/${address.building_id}`}
+                                    key={address.building_id}
+                                    className="cursor-pointer px-4 py-2 hover:bg-primary-gray block"
                                     onClick={() => {
-                                        const fullAddress = `${address.street}, ${address.number}`;
+                                        const fullAddress = `${address.street}, ${address.building}`;
                                         setDraftQuery(fullAddress);
                                         clearSimilarAddresses();
                                         void searchBlackouts(fullAddress);
                                     }}
                                 >
-                                    {`${address.street}, ${address.number}`}
-                                </li>
+                                    {`${address.street}, ${address.building}`}
+                                </Link>
                             ))}
-                        </ul>
+                        </div>
                     )}
                 </div>
                 <FilterButton type="submit" disabled={isLoading}>
@@ -132,9 +134,10 @@ const BlackoutFiltersPanel = () => {
                 <Select
                     id="type-select"
                     label="Тип"
-                    value={selectedType}
+                    value={selectedType ?? "all"}
                     onChange={handleTypeSelect}
                     options={typeOptions}
+                    getTextColor={(value) => value === "all" ? "text-gray-400" : "text-slate-700"}
                 />
 
                 <MultiSelect
@@ -150,7 +153,7 @@ const BlackoutFiltersPanel = () => {
 
                 {(hasActiveFilters || selectedDate) && (
                     <div className="flex flex-col">
-                        <label className="mb-1.5 text-sm font-medium text-slate-600">
+                        <label className="mb-1.5 text-sm font-medium text-primary-gray">
                             &nbsp;
                         </label>
                         <FilterButton type="button" onClick={handleClear}>

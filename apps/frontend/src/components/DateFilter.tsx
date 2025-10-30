@@ -29,7 +29,7 @@ const DateFilter = () => {
             <div className="flex items-center gap-2">
                 <button 
                     onClick={handlePrevDay} 
-                    className="p-2 rounded-md hover:bg-gray-200 transition-colors"
+                    className="p-2 rounded-md hover:bg-primary-gray transition-colors"
                     aria-label="Предыдущий день"
                 >
                     <ChevronLeft className="h-5 w-5" />
@@ -43,7 +43,7 @@ const DateFilter = () => {
                 />
                 <button 
                     onClick={handleNextDay} 
-                    className="p-2 rounded-md hover:bg-gray-200 transition-colors"
+                    className="p-2 rounded-md hover:bg-primary-gray transition-colors"
                     aria-label="Следующий день"
                 >
                     <ChevronRight className="h-5 w-5" />
