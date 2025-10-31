@@ -8,8 +8,8 @@ export interface ApiResponse<T = any> {
 }
 
 const api: AxiosInstance = axios.create({
-  // baseURL: import.meta.env.VITE_API_URL,
-  baseURL: 'http://localhost:8001',
+  baseURL: import.meta.env.VITE_API_URL,
+  // baseURL: 'http://localhost:8000',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export const getRequest = async <T = any>(url: string, params?: object): Promise
     };
   } catch (error: any) {
 
-    if (error.response?.status === 404) {
+    if (error.response?.status >= 400) {
       window.location.href = '/error';
     }
 

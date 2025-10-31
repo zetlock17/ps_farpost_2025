@@ -5,6 +5,7 @@ import MainPage from './components/MainPage';
 import AddressPage from './components/AddressPage';
 import PlaceholderPage from './components/PlaceholderPage';
 import StatisticsPage from './components/StatisticsPage';
+import ErrorPage from './components/ErrorPage';
 import Header from './components/Header';
 import MobileMenu from './components/MobileMenu';
 import { useMediaQuery } from './hooks/useMediaQuery';
@@ -27,6 +28,7 @@ function App() {
 				<Route path="/address/:building_id" element={<AddressPage />} />
 				<Route path="/statistics" element={<StatisticsPage />} />
 				<Route path="/placeholder" element={<PlaceholderPage />} />
+				<Route path="/error" element={<ErrorPage />} />
 			</Routes>
 		</Router>
 	);
