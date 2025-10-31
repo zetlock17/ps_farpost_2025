@@ -165,11 +165,13 @@ const MapOfBlackouts = ({
           className="h-full w-full"
           style={{ width: '100%', height: '100%' }}
         />
-        <img
-          src={adImage}
-          alt="Реклама"
-          className="absolute bottom-4 right-4 w-32 h-16 object-contain z-10"
-        />
+        <a href="https://tramplinit.ru" target="_blank" rel="noopener noreferrer">
+          <img
+            src={adImage}
+            alt="Реклама"
+            className="absolute bottom-4 right-4 w-32 h-16 object-contain z-10 cursor-pointer"
+          />
+        </a>
         {!isLoading && filteredBlackouts.length === 0 && (
           <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 -translate-y-1/2 text-center text-white drop-shadow">
             Нет отключений для отображения
@@ -216,11 +218,13 @@ const MapOfBlackouts = ({
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
-          <img
-            src={adImage}
-            alt="Реклама"
-            className="absolute bottom-4 right-4 w-32 h-16 object-contain z-10"
-          />
+          <a href="https://tramplinit.ru" target="_blank" rel="noopener noreferrer">
+            <img
+              src={adImage}
+              alt="Реклама"
+              className="absolute bottom-4 right-4 w-32 h-16 object-contain z-10 cursor-pointer"
+            />
+          </a>
         </div>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 mt-5">
