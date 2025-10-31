@@ -1,6 +1,7 @@
 import { useBlackoutsStore } from "../store/blackoutsStore";
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState, useMemo } from "react";
+import adImage from "../assets/ad.png";
 
 interface MapOfBlackoutsProps {
   variant?: "default" | "fullscreen";
@@ -164,6 +165,11 @@ const MapOfBlackouts = ({
           className="h-full w-full"
           style={{ width: '100%', height: '100%' }}
         />
+        <img
+          src={adImage}
+          alt="Реклама"
+          className="absolute bottom-4 right-4 w-32 h-16 object-contain z-10"
+        />
         {!isLoading && filteredBlackouts.length === 0 && (
           <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 -translate-y-1/2 text-center text-white drop-shadow">
             Нет отключений для отображения
@@ -200,15 +206,22 @@ const MapOfBlackouts = ({
       </div>
 
       {shouldRenderMap ? (
-        <div 
-          ref={mapRef} 
-          style={{ 
-            width: '100%', 
-            height: '600px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}
-        />
+        <div className="relative">
+          <div 
+            ref={mapRef} 
+            style={{ 
+              width: '100%', 
+              height: '600px',
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+          />
+          <img
+            src={adImage}
+            alt="Реклама"
+            className="absolute bottom-4 right-4 w-32 h-16 object-contain z-10"
+          />
+        </div>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 mt-5">
           {filteredBlackouts.map((blackout) => (
